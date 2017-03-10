@@ -1,0 +1,21 @@
+extends ../layouts/base
+
+block css	
+	link(rel='stylesheet' href="lib/leaflet/MarkerCluster.Default.css")
+	link(rel='stylesheet' href="lib/leaflet/MarkerCluster.css")
+	link(rel='stylesheet' href="lib/leaflet/leaflet.draw.css")
+
+block content
+	div#mapid
+	div#priorityAreas
+		h1.priority-list-heading Priority Areas
+		ul#priorityList.list-group.customlistgroup
+
+block jsScripts	
+	script(src="lib/leaflet/leaflet.draw.js")
+	script(src="js/controlElements.js")
+	script(src="js/priorityList.js")
+	script(src="js/popup.js")
+	script(src="js/map.js")
+	script(src='lib/leaflet/leaflet.markercluster.js')
+	script(src='https://npmcdn.com/@turf/turf@3.5.1/turf.min.js')

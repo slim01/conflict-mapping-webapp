@@ -1,0 +1,32 @@
+include ../mixins/flash-messages
+doctype html
+html
+  head
+    meta(charset="utf8")
+    meta(name="viewport", content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width")
+    title Map
+    link(rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+    link(rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css")
+    link(rel="stylesheet" href="css/style.css")
+    block css
+    block head
+  body
+    nav.navbar.navbar-inverse.navbar-custom.navbar-fixed-top
+      .container
+        .collapse.navbar-collapse#navbar-collapse
+          ul.nav.navbar-nav
+            each link in navLinks
+              li(class=(section === link.key ? 'active' : null)): a(href=link.href)= link.label
+          ul.nav.navbar-nav.navbar-right
+            if user && user.canAccessKeystone
+              li: a(href='/keystone') Admin UI
+            if user
+              li: a(href='/keystone/signout') Sign Out
+            if !user
+              li: a(href='/signin') Sign In
+    +flash-messages(messages)
+    block content
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js")
+    script(src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js")   
+    block jsScripts

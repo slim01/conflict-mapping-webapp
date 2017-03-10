@@ -1,0 +1,64 @@
+html, 
+body {
+  padding-top: 25px;
+  width: 100%;
+  height:100%;
+  background-color: rgba(252,255,245,1);	  
+}
+#mapid { 
+	height: 100%;
+	width: 80%;
+	position:relative;
+	z-index: 0;
+}
+.navbar-custom{
+	background-color: rgba(25,52,65,1);	
+}
+.navbar-custom .navbar-nav > li > a {
+    
+}
+#navbar-collapse{
+	width:100%;
+}
+#scenarios{
+	margin-top: 10px;
+}
+#priorityAreas{		
+	height: 100%;
+	width: 20%;
+	left: 80%;
+	top:-100%;
+	position: relative;	
+	background-color: rgba(25,52,65,1);
+	z-index: 314159;
+	/*
+	border-top: 1px solid;
+	border-top-color: #FCFFF5;*/
+}
+.sidebar-wrapper {
+    
+}
+.priority-list-heading{
+	color: black;
+	font-family: Helvetica,Arial,sans-serif;
+	margin-top: 0px;
+	background-color: #9d9d9d;
+}
+.customlistitem{
+	background-color: rgba(200,200,200,0.9);
+	pointer-events: initial;
+}
+.customlistitemspan{	
+    text-decoration:underline;
+}
+.customlistgroup{
+	pointer-events: initial;
+	overflow: auto;
+	height:75%;
+}
+.custom-overview-item{
+	background-color: white;	
+}
+.overview-item-heading{
+	color:  rgba(25,52,65,1);	
+}

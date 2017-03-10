@@ -1,4 +1,6 @@
 # Logs
+data/scenarios/*
+
 logs
 *.log
 npm-debug.log*

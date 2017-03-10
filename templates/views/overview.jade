@@ -1,0 +1,13 @@
+extends ../layouts/base
+block content
+	.container
+		div#scenarios
+			if scenarios.length
+				each scenario, i in scenarios
+					.well.well-sm.custom-overview-item
+						a(href='/map##{scenario.id}'): span 
+							h3.overview-item-heading
+								| #{scenario.title}
+								br
+								small.text-muted= scenario.subtitle
+								br

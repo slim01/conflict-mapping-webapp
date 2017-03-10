@@ -1,0 +1,19 @@
+{
+  "name": "conflict-mapping-webapp",
+  "version": "1.0.0",
+  "description": "Application to combine community-based and automatic image analysis in crisis mapping",
+  "main": "Server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "async": "^2.1.2",
+    "express": "^4.13.3",
+    "gdal": "^0.9.3",
+    "jade": "^1.11.0",
+    "keystone": "latest",
+    "leaflet-draw": "^0.4.7",
+    "ogr2ogr": "^1.0.0",
+    "underscore": "latest"
+  }
+}
