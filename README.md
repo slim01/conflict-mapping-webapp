@@ -6,3 +6,5 @@ How to run:
 - start your MongoDB
 - run npm install
 - run npm start server / node server.js
+
+Python is needed (recommended version 2.7)

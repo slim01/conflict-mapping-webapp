@@ -34,6 +34,7 @@ $(document).ready(function() {
             _addGeoJsons(map, JSON.parse(scenario.geojson_buildings), JSON.parse(scenario.geojson_settlements), mode);
             _colorVotedFeatures();
             addFeatureSwitcher(map);
+            addDownloadFunctionality(map);
         });
 
 
@@ -86,6 +87,29 @@ $(document).ready(function() {
 
 
         addLayerControl(map, baseLayer);
+    }
+
+    function addDownloadFunctionality(map) {
+        $.get('/getUser', {},
+            function(res) {
+                if (!res.data) return;
+                if (res.data.user && res.data.user.canAccessKeystone) {
+                    addDownloadControl(map);
+                }
+            });
+        $("#downloadModalButton").click(function() {
+            var format = $("input[name=formatRadio]:checked").val();
+            if (!format) {
+                alert("please select format first");
+                return;
+            }
+            var includeOnlyPositiveBuildings = $('#buildingsPositiveBalance').is(":checked");
+            var includeOnlyPositiveSettlements = $('#settlementsPositiveBalance').is(":checked");
+            window.open('/download?scenarioId=' + scenario_id + '&format=' + format + '&includeOnlyPositiveBuildings=' + includeOnlyPositiveBuildings + '&includeOnlyPositiveSettlements=' + includeOnlyPositiveSettlements);           
+
+        });
+
+
     }
 
     function _colorVotedFeatures() {

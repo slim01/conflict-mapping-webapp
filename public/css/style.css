@@ -62,3 +62,6 @@ body {
 .overview-item-heading{
 	color:  rgba(25,52,65,1);	
 }
+#downloadControl{
+	font-size: 25px;
+}

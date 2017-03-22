@@ -42,8 +42,7 @@ function addLayerControl(map, baseLayer) {
 }
 
 function addFeatureSwitcher(map) {
-    //var settlements_json = settlements_json;
-    //var circleMarkers = circleMarkers;
+
     var CustomControl = L.Control.extend({
 
         options: {
@@ -89,18 +88,35 @@ function addFeatureSwitcher(map) {
 
 }
 
+function addDownloadControl(map) {
+
+    var DownloadControl = L.Control.extend({
+
+        options: {
+            position: 'topright'
+        },
+        onAdd: function(map) {
+            var container = L.DomUtil.create('div', 'glyphicon glyphicon-download-alt leaflet-bar leaflet-control leaflet-control-custom');
+            container.id = "downloadControl";
+            container.title = "Download";
+            container.style.backgroundColor = 'white';
+            container.style.width = '30px';
+            container.style.height = '30px';
+            container.onclick = function() {
+                $("#downloadModal").modal();
+            }
+            return container
+        }
+
+    });
+
+    map.addControl(new DownloadControl());
+}
+
 function addDrawControl(map, settlements_json, circleMarkers) {
     var drawLayer = new L.FeatureGroup();
-    map.addLayer(drawLayer);    
+    map.addLayer(drawLayer);
 
-    /*var MyCustomMarker = L.Icon.extend({
-        options: {
-            shadowUrl: null,
-            iconAnchor: new L.Point(12, 12),
-            iconSize: new L.Point(24, 24),
-            iconUrl: '/images/arrow_forward.png'
-        }
-    });*/
     var options = {
         position: 'topleft',
         draw: {

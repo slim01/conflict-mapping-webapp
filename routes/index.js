@@ -40,6 +40,7 @@ exports = module.exports = function(app) {
     app.get('/getScenarioById:id', keystone.middleware.api, routes.api.scenario);    
     app.get('/getVotesOfElement', keystone.middleware.api, routes.api.getVotesOfElement);
     app.post('/vote', keystone.middleware.api, routes.api.vote);
+    app.get('/download', keystone.middleware.api, routes.api.download);
     app.post('/deleteElement', keystone.middleware.api, routes.api.deleteElement);
     app.post('/addFeature', keystone.middleware.api, routes.api.addFeature);
 }

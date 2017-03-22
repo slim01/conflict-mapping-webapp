@@ -10,8 +10,36 @@ block content
 	div#priorityAreas
 		h1.priority-list-heading Priority Areas
 		ul#priorityList.list-group.customlistgroup
-
-block jsScripts	
+	#downloadModal.modal.fade(role='dialog')
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type='button', data-dismiss='modal') ×
+					h4.modal-title Download
+				.modal-body
+					p Format
+					label.radio-inline
+						input(type='radio', name='formatRadio' value="JSON")
+						| JSON
+					label.radio-inline
+						input(type='radio', name='formatRadio' value="Shapefile")
+						| Shapefile	
+					br
+					br
+					br
+					label.checkbox-inline
+						input#buildingsPositiveBalance(type='checkbox', value='')
+						| Only include buildings with positive balance
+					br
+					br
+					br
+					label.checkbox-inline
+						input#settlementsPositiveBalance(type='checkbox', value='')
+						| Mark tiles as settlements according to their balance
+				.modal-footer
+					button#downloadModalButton.btn.btn-default(type='button') Download
+					button.btn.btn-default(type='button', data-dismiss='modal') Close					
+block jsScripts
 	script(src="lib/leaflet/leaflet.draw.js")
 	script(src="js/controlElements.js")
 	script(src="js/priorityList.js")
