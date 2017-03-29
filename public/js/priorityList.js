@@ -44,7 +44,7 @@ function sortPriorityList() {
 
     for (var i = 0; i < liArray.length; i++) {
 
-        liArray[i].innerHTML = "<span class='tab customlistitemspan'>" + (i + 1) + ". Area (" + $(liArray[i]).data('containingPoints') + " mapped buildings, " + $(liArray[i]).data('containingVotes') + "Votes)</span>";
+        liArray[i].innerHTML = "<span class='tab customlistitemspan'><h3>" + (i + 1) + ". Area</h3> " + $(liArray[i]).data('containingPoints') + " <span title='" + $(liArray[i]).data('containingPoints') + " mapped buldings' class='glyphicon glyphicon-home'></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + $(liArray[i]).data('containingVotes') + " <span title='" + $(liArray[i]).data('containingVotes') + " votes on buildings' class='glyphicon glyphicon-user'></span></span>";
         new_ul.appendChild(liArray[i]);
     }
     oldUl[0].parentNode.replaceChild(new_ul, oldUl[0]);

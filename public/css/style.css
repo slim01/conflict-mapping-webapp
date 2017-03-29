@@ -39,17 +39,32 @@ body {
     
 }
 .priority-list-heading{
-	color: black;
+	color: rgba(252,255,245,1);
 	font-family: Helvetica,Arial,sans-serif;
-	margin-top: 0px;
-	background-color: #9d9d9d;
+	margin-top: 0px;	
+	background-color: rgba(25,52,65,1);
+	text-decoration:underline;
+	text-align: center;
 }
+#priorityList { 
+	height:80%;
+}
+
+a.list-group-item:focus, a.list-group-item:hover, button.list-group-item:focus, button.list-group-item:hover {
+    color: #555;
+    text-decoration: none;
+    background-color: black;
+}
+
 .customlistitem{
-	background-color: rgba(200,200,200,0.9);
+	background-color: rgba(25,52,65,1);
 	pointer-events: initial;
 }
-.customlistitemspan{	
-    text-decoration:underline;
+.customlistitemspan{
+	color: rgba(252,255,245,1);
+}
+.customlistitemspan h3{
+	color: rgba(252,255,245,1);
 }
 .customlistgroup{
 	pointer-events: initial;
