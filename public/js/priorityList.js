@@ -30,12 +30,25 @@ function sortPriorityList() {
         if (oldUl[0].childNodes[i].nodeName === 'A')
             liArray.push(oldUl[0].childNodes[i]);
     }
-    liArray.sort(function(a, b) {
-        if ($(a).data('containingPoints') > $(b).data('containingPoints')) {
+    liArray.sort(function(a, b) {        
+        var Acp = $(a).data('containingPoints');
+        var Acv = $(a).data('containingVotes');
+        var Bcp = $(b).data('containingPoints');
+        var Bcv = $(b).data('containingVotes');
+        var rankA = Acp - Acv;
+        var rankB = Bcp - Bcv;
+        if (rankA < 1){
+            rankA = Acp/Acv - 0.1
+        }
+        if(rankB < 1){
+            rankB = Bcp/Bcv - 0.1
+        }
+
+        if (rankA > rankB) {
             return -1;
         }
 
-        if ($(a).data('containingPoints') < $(b).data('containingPoints')) {
+        if (rankA < rankB) {
             return 1;
         }
         return 0;
