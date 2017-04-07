@@ -160,8 +160,8 @@ function addDrawControl(map, settlements_json, circleMarkers) {
                         alert("please log in first");
                         return;
                     }
-                    console.log(layer);
                     $.post('/log', {
+                            scenarioId: scenario_id,
                             logMessage: " added building with coordinates lat: " + layer._latlng.lat + " lng: " + layer._latlng.lng
                         },
                         function(returnedData) {});

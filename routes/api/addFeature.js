@@ -12,16 +12,13 @@ exports = module.exports = function(req, res) {
             "status": "no user"
         }
     });
-    Scenario.model.findById(scenario_id, function(err, scenario) {
-        console.log("incoming request");        
-        console.log(scenario.processed);
+    Scenario.model.findById(scenario_id, function(err, scenario) {        
         if (err) return res.apiError('database error', err);
         /*var _json = scenario.geojson_buildings; 
         _json.features += jsonString;       
         console.log(_json.features);*/
         var _json = JSON.parse(scenario.geojson_buildings);
         var lastFeature = _json.features[_json.features.length-1];
-        console.log(lastFeature.id);
 
         var newFeature = new Object();
         newFeature.type = "Feature";

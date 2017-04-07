@@ -17,6 +17,7 @@ function addPopupForBuildings(feature, layer, map, isAdmin) {
                 showVotesInPopup(returnedData.data);
                 if (returnedData.data.status === "success") {
                     $.post('/log', {
+                            scenarioId: scenario_id,
                             logMessage: " voted positive on building with id " + feature.id + " with coordinates " + feature.geometry.coordinates[0] + " " + feature.geometry.coordinates[1]
                         },
                         function(returnedData) {});
@@ -48,6 +49,7 @@ function addPopupForBuildings(feature, layer, map, isAdmin) {
                 showVotesInPopup(returnedData.data);
                 if (returnedData.data.status === "success") {
                     $.post('/log', {
+                            scenarioId: scenario_id,
                             logMessage: " voted negative on building with id " + feature.id + " with coordinates " + feature.geometry.coordinates[0] + " " + feature.geometry.coordinates[1]
                         },
                         function(returnedData) {});
@@ -117,6 +119,7 @@ function addPopupForSettlements(feature, layer, map, isAdmin) {
                 showVotesInPopup(returnedData.data);
                 if (returnedData.data.status === "success") {
                     $.post('/log', {
+                            scenarioId: scenario_id,
                             logMessage: " voted positive on tile with id " + feature.id
                         },
                         function(returnedData) {});
@@ -147,6 +150,7 @@ function addPopupForSettlements(feature, layer, map, isAdmin) {
                 showVotesInPopup(returnedData.data);
                 if (returnedData.data.status === "success") {
                     $.post('/log', {
+                            scenarioId: scenario_id,
                             logMessage: " voted negative on tile with id " + feature.id
                         },
                         function(returnedData) {});

@@ -84,6 +84,7 @@ $(document).ready(function() {
         map.options.crs = L.CRS.EPSG4326;
         map.setView(center);
         map._resetView(map.getCenter(), map.getZoom());
+        console.log(baseLayer);       
 
 
         addLayerControl(map, baseLayer);
