@@ -15,10 +15,16 @@ function addPopupForBuildings(feature, layer, map, isAdmin) {
                     return;
                 }
                 showVotesInPopup(returnedData.data);
-                layer.setStyle({
-                    color: buildingColor_voted
-                });
                 if (returnedData.data.status === "success") {
+                    $.post('/log', {
+                            logMessage: " voted positive on building with id " + feature.id + " with coordinates " + feature.geometry.coordinates[0] + " " + feature.geometry.coordinates[1]
+                        },
+                        function(returnedData) {});
+
+                    layer.setStyle({
+                        color: buildingColor_voted
+                    });
+
                     $('#bottomText').html("Thanks for your vote");
                 } else {
                     $('#bottomText').html("You have already voted for this");
@@ -40,10 +46,16 @@ function addPopupForBuildings(feature, layer, map, isAdmin) {
                     return;
                 }
                 showVotesInPopup(returnedData.data);
-                layer.setStyle({
-                    color: buildingColor_voted_against
-                });                
                 if (returnedData.data.status === "success") {
+                    $.post('/log', {
+                            logMessage: " voted negative on building with id " + feature.id + " with coordinates " + feature.geometry.coordinates[0] + " " + feature.geometry.coordinates[1]
+                        },
+                        function(returnedData) {});
+
+                    layer.setStyle({
+                        color: buildingColor_voted_against
+                    });
+
                     $('#bottomText').html("Thanks for your vote");
 
                 } else {
@@ -102,11 +114,16 @@ function addPopupForSettlements(feature, layer, map, isAdmin) {
                     $('#bottomText').html("Please log in first");
                     return;
                 }
-                layer.setStyle({
-                    color: settlementColor_voted
-                });
                 showVotesInPopup(returnedData.data);
                 if (returnedData.data.status === "success") {
+                    $.post('/log', {
+                            logMessage: " voted positive on tile with id " + feature.id
+                        },
+                        function(returnedData) {});
+                    layer.setStyle({
+                        color: settlementColor_voted
+                    });
+
                     $('#bottomText').html("Thanks for your vote");
                 } else {
                     $('#bottomText').html("You have already voted");
@@ -127,12 +144,18 @@ function addPopupForSettlements(feature, layer, map, isAdmin) {
                     $('#bottomText').html("Please log in first");
                     return;
                 }
-                layer.setStyle({
-                    color: settlementColor_voted_against,
-                    opacity: 1
-                });
                 showVotesInPopup(returnedData.data);
                 if (returnedData.data.status === "success") {
+                    $.post('/log', {
+                            logMessage: " voted negative on tile with id " + feature.id
+                        },
+                        function(returnedData) {});
+                    layer.setStyle({
+                        color: settlementColor_voted_against,
+                        opacity: 1
+                    });
+                    showVotesInPopup(returnedData.data);
+
                     $('#bottomText').html("Thanks for your vote");
                 } else {
                     $('#bottomText').html("You have already voted");
@@ -155,10 +178,9 @@ function addPopupForSettlements(feature, layer, map, isAdmin) {
 
     });
     var settlement_string = "";
-    if(feature.properties.settlement === 0){
+    if (feature.properties.settlement === 0) {
         settlement_string = "as 'no settlement' ?"
-    }
-    else{
+    } else {
         settlement_string = "as 'settlement' ?"
     }
     container.html("Is this tile  mapped correctly " + settlement_string + "<br><br><button type='button' id='positiveVote' class='btn btn-success'><span class='glyphicon glyphicon-thumbs-up'></span></button> <button type='button' id='negativeVote' class='btn btn-danger'><span class='glyphicon glyphicon-thumbs-down'></span></button><br><br><div id ='positiveResult'></div><br><div id ='negativeResult'></div><br><div id ='bottomText'></div><div id = 'adminControl'></div>");
