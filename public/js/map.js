@@ -222,8 +222,8 @@ $(document).ready(function() {
                 });
                 circleMarkers.addLayer(buildings_json);
                 map.addLayer(circleMarkers);
-
-
+    
+                map.setMaxBounds(settlements_json.getBounds());
                 if (mode === "init") {
                     map.fitBounds(buildings_json.getBounds());
                 } else {
