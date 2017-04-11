@@ -37,11 +37,13 @@ exports = module.exports = function(req, res) {
         scenario.processed = true;
         scenario.geojson_buildings = JSON.stringify(_json, null, 2);
         scenario.save();
-        return res.apiResponse({
-            data: {
-                "status": "success",
-                "featureCounter": featureCounter
-            }
+        scenario.save().then(function(scenario) {
+            return res.apiResponse({
+                data: {
+                    "status": "success",
+                    "featureCounter": featureCounter
+                }
+            });
         });
     });
 }
