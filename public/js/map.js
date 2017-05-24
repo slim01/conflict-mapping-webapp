@@ -16,8 +16,8 @@ var buildings_json;
 var settlements_json;
 var scenario_id;
 var refreshBounds;
-var layer_visibilty = true;
-
+var layer_visibilty = 1;
+var _map;
 var refresh;
 
 $(document).ready(function() {
@@ -26,15 +26,24 @@ $(document).ready(function() {
 
     function _init(mode) {
         scenario_id = window.location.hash.substring(1);
-        var map = L.map('mapid').setView([51.505, -0.09], 13);
+        if (mode === "init") {
+            var map = L.map('mapid').setView([51.505, -0.09], 13);
+        } else {
+            map = _map;
+        }
 
         $.get('/getScenarioById' + scenario_id, function(res) {
             var scenario = res.data;
-            _createBaseLayer(map, scenario.wms_before, scenario.wms_after, scenario.layer_before, scenario.layer_after);
             _addGeoJsons(map, JSON.parse(scenario.geojson_buildings), JSON.parse(scenario.geojson_settlements), mode);
+            if (mode === "init") {
+                _createBaseLayer(map, scenario.wms_before, scenario.wms_after, scenario.layer_before, scenario.layer_after);
+                addFeatureSwitcher(map);
+                addDownloadFunctionality(map);
+                addZoomToDefault(map);
+                _showMarkersAtCertainZoomLevel(map, 15);
+            }
             _colorVotedFeatures();
-            addFeatureSwitcher(map);
-            addDownloadFunctionality(map);
+
         });
 
 
@@ -84,7 +93,6 @@ $(document).ready(function() {
         map.options.crs = L.CRS.EPSG4326;
         map.setView(center);
         map._resetView(map.getCenter(), map.getZoom());
-        console.log(baseLayer);       
 
 
         addLayerControl(map, baseLayer);
@@ -106,7 +114,7 @@ $(document).ready(function() {
             }
             var includeOnlyPositiveBuildings = $('#buildingsPositiveBalance').is(":checked");
             var includeOnlyPositiveSettlements = $('#settlementsPositiveBalance').is(":checked");
-            window.open('/download?scenarioId=' + scenario_id + '&format=' + format + '&includeOnlyPositiveBuildings=' + includeOnlyPositiveBuildings + '&includeOnlyPositiveSettlements=' + includeOnlyPositiveSettlements);           
+            window.open('/download?scenarioId=' + scenario_id + '&format=' + format + '&includeOnlyPositiveBuildings=' + includeOnlyPositiveBuildings + '&includeOnlyPositiveSettlements=' + includeOnlyPositiveSettlements);
 
         });
 
@@ -157,6 +165,17 @@ $(document).ready(function() {
             });
     }
 
+    function _showMarkersAtCertainZoomLevel(map, zoomLevel) {
+        map.on('zoomend', function(e) {
+            if (map.getZoom() > zoomLevel) {
+                map.addLayer(buildings_json);
+            } else {
+                map.removeLayer(buildings_json);
+            }
+        });
+
+    }
+
 
     function _addGeoJsons(map, buildings, settlements, mode) {
         var isAdmin = false;
@@ -170,15 +189,9 @@ $(document).ready(function() {
                 buildings_json = new L.geoJSON(buildings, {
 
                     onEachFeature: function(feature, layer) {
-                        //if (feature.properties) {
-                        /*
-                        layer.bindPopup(Object.keys(feature.properties).map(function(k) {
-                            return k + ": " + feature.properties[k];
-                        }).join("<br />"), {
-                            maxHeight: 200
-                        });*/
+
                         addPopupForBuildings(feature, layer, map, isAdmin);
-                        //}
+
                     },
                     pointToLayer: function(feature, latlng) {
                         return L.circleMarker(latlng, {
@@ -188,56 +201,61 @@ $(document).ready(function() {
                 });
 
 
-                settlements_json = new L.geoJSON(settlements, {
-                    onEachFeature: function(feature, layer) {
-                        //if (feature.properties) {
-                        /*
-                        layer.bindPopup(Object.keys(feature.properties).map(function(k) {
-                            return k + ": " + feature.properties[k];
-                        }).join("<br />"), {
-                            maxHeight: 200
-                        });*/
-                        if (feature.properties.settlement === 0) {
-                            layer.setStyle({
-                                color: TileColor_noSettlement,
-                                opacity: 0.2
-                            });
-                        }
-                        addToPriorityList(feature, layer, map);
-                        addPopupForSettlements(feature, layer, map, isAdmin);
-                        //}
-                    },
-                    pointToLayer: function(feature, latlng) {
-                        return L.circleMarker(latlng);
-                    }
-                });
-                sortPriorityList();
+                if (mode === "init") {
+                    settlements_json = new L.geoJSON(settlements, {
+                        onEachFeature: function(feature, layer) {
+                            if (feature.properties.settlement === 1) {
+                                layer.setStyle({
+                                    opacity: 0.5
+                                });
+                            } else {
+                                layer.setStyle({
+                                    color: TileColor_noSettlement,
+                                    opacity: 0.5
+                                });
+                            }
+                            addToPriorityList(feature, layer, map);
+                            addPopupForSettlements(feature, layer, map, isAdmin);
 
-                map.addLayer(settlements_json);
-                var circleMarkers = L.markerClusterGroup({
+                        }
+
+                    });
+                    sortPriorityList();
+                    map.addLayer(settlements_json);
+                }
+                /*var circleMarkers = L.markerClusterGroup({
                     zoomToBoundsOnClick: true,
                     spiderfyOnMaxZoom: false,
                     maxClusterRadius: 40,
                     disableClusteringAtZoom: 17
                 });
-                circleMarkers.addLayer(buildings_json);
-                map.addLayer(circleMarkers);
-    
-                map.setMaxBounds(settlements_json.getBounds());
+                circleMarkers.addLayer(buildings_json);*/
+                map.addLayer(buildings_json);
+
                 if (mode === "init") {
-                    map.fitBounds(buildings_json.getBounds());
+                    try {
+                        map.fitBounds(settlements_json.getBounds());
+                        map.removeLayer(buildings_json);
+                    } catch (err) {
+                        console.log("can't get bounds");
+                    }
+                    addDrawControl(map);
                 } else {
+
                     map.fitBounds(refreshBounds);
                 }
-                addDrawControl(map, settlements_json, circleMarkers);
+
 
             });
 
     }
     refresh = function(map) {
         refreshBounds = map.getBounds();
-        $('#priorityList').empty();
-        map.remove();
+        //$('#priorityList').empty();
+        //map.remove();
+        //map.removeLayer(settlements_json);
+        map.removeLayer(buildings_json);
+        _map = map;
         _init("refresh");
     }
 

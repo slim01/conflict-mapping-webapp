@@ -88,3 +88,13 @@ a.list-group-item:focus, a.list-group-item:hover, button.list-group-item:focus, 
 #downloadControl{
 	font-size: 25px;
 }
+#featureSwitcher{
+	font-size: 20px;
+	text-align: center;
+    vertical-align: middle;
+}
+#zoomToDefault{
+	font-size: 20px;
+	text-align: center;
+    vertical-align: middle;
+}

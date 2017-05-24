@@ -80,6 +80,12 @@ Scenario.add({
         required: false,
         index: true,
         initial: true
+    },    
+    useGeojsonInsteadOfShp: {
+        type: Types.Boolean,
+        required: false,
+        index: true,
+        initial: true
     },
     processed: {
         type: Boolean,
@@ -103,12 +109,17 @@ Scenario.schema.pre('save', function(next) {
             }
             //convert buildings shp to geojson
             //try {
+            if (!scenarioToSave.useGeojsonInsteadOfShp) {
                 var buildings_conversion = ogr2ogr('./data/scenarios/' + scenarioToSave.shp_buildings.filename)
                     .format('GeoJSON')
                     .skipfailures()
                     .project("EPSG:4326", "EPSG:" + epsg)
                     .stream()
                 var stream = buildings_conversion.pipe(fs.createWriteStream('./data/scenarios/' + scenarioToSave._id + '.json'));
+            } else {
+                var rstream = fs.createReadStream('./data/scenarios/' + scenarioToSave.shp_buildings.filename);
+                var stream = rstream.pipe(fs.createWriteStream('./data/scenarios/' + scenarioToSave._id + '.json'));
+            }
             /*} catch (err) {
                 console.log(err);                
                 console.log("could not convert buildings shp, trying again for the" + counter + "time");
@@ -163,12 +174,17 @@ Scenario.schema.pre('save', function(next) {
             }
             //convert settlements shp to geojson
             //try {
-            var settlements_conversion = ogr2ogr('./data/scenarios/' + scenarioToSave.shp_settlements.filename)
-                .format('GeoJSON')
-                .skipfailures()
-                .project("EPSG:4326", "EPSG:" + epsg)
-                .stream()
-            var set_stream = settlements_conversion.pipe(fs.createWriteStream('./data/scenarios/' + scenarioToSave._id + '_settlements.json'));
+            if (!scenarioToSave.useGeojsonInsteadOfShp) {
+                var settlements_conversion = ogr2ogr('./data/scenarios/' + scenarioToSave.shp_settlements.filename)
+                    .format('GeoJSON')
+                    .skipfailures()
+                    .project("EPSG:4326", "EPSG:" + epsg)
+                    .stream()
+                var set_stream = settlements_conversion.pipe(fs.createWriteStream('./data/scenarios/' + scenarioToSave._id + '_settlements.json'));
+            } else {
+                var rstream = fs.createReadStream('./data/scenarios/' + scenarioToSave.shp_settlements.filename);
+                var set_stream = rstream.pipe(fs.createWriteStream('./data/scenarios/' + scenarioToSave._id + '_settlements.json'));                
+            }
             //} catch (err) {
             //console.log(err);
             //console.log("error during settlements shp conversion");
@@ -177,6 +193,7 @@ Scenario.schema.pre('save', function(next) {
 
             // add custom properties
             set_stream.on('finish', function() {
+                console.log("finished");
                 fs.readFile('./data/scenarios/' + scenarioToSave._id + '_settlements.json', (err, data) => {
                     if (err) throw err;
                     try {

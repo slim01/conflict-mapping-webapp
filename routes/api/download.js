@@ -1,8 +1,8 @@
 var keystone = require('keystone'),
     Scenario = keystone.list('Scenario');
 var fs = require('fs');
-var AdmZip = require('adm-zip');
 var ogr2ogr = require('ogr2ogr');
+var archiver = require('archiver');
 
 exports = module.exports = function(req, res) {
     var scenario_id = req.query.scenarioId;
@@ -49,6 +49,7 @@ exports = module.exports = function(req, res) {
         }
         fs.writeFile(buildingsFile, buildings_json, function(err) {
             if (err) {
+                console.log(err);
                 return res.apiResponse({
                     data: {
                         "status": "failed"
@@ -64,28 +65,40 @@ exports = module.exports = function(req, res) {
                     });
                 }
                 if (format === "JSON") {
-                    var zip = new AdmZip();
-                    zip.addLocalFile(buildingsFile);
-                    zip.addLocalFile(settlementsFile);
                     var file = "./data/downloads/" + scenario.title + date + ".zip";
-                    zip.writeZip(file);
-
-                    res.download(file, function(err) {
-                        if (err) {
-                            console.log("Error");
-                            console.log(err);
-                        } else {
-                            fs.unlink(file, function() {
-                                console.log("file deleted");
-                            });
-                            fs.unlink(buildingsFile, function() {
-                                console.log("file deleted");
-                            });
-                            fs.unlink(settlementsFile, function() {
-                                console.log("file deleted");
-                            });
+                    var output = fs.createWriteStream(file);
+                    var archive = archiver('zip', {
+                        zlib: {
+                            level: 9
                         }
                     });
+                    archive.on('error', function(err) {
+                        throw err;
+                    });
+                    archive.pipe(output);
+                    archive.file(buildingsFile);
+                    archive.file(settlementsFile);
+                    archive.finalize();
+
+                    output.on('close', function() {
+                        res.download(file, function(err) {
+                            if (err) {
+                                console.log("Error");
+                                console.log(err);
+                            } else {
+                                fs.unlink(file, function() {
+                                    console.log("file deleted");
+                                });
+                                fs.unlink(buildingsFile, function() {
+                                    console.log("file deleted");
+                                });
+                                fs.unlink(settlementsFile, function() {
+                                    console.log("file deleted");
+                                });
+                            }
+                        });
+                    });
+
                 } else if (format === "Shapefile") {
                     /*
                      * TODO let user set output projection
@@ -106,35 +119,46 @@ exports = module.exports = function(req, res) {
                             .stream()
                         var shapeStream = settlementsConversion.pipe(fs.createWriteStream(settlementsShapeFile));
                         shapeStream.on('finish', function() {
-                            var zip = new AdmZip();
-                            zip.addLocalFile(buildingsShapeFile);
-                            zip.addLocalFile(settlementsShapeFile);
+
+
                             var file = "./data/downloads/" + scenario.title + date + ".zip";
-                            zip.writeZip(file);
-                            res.download(file, function(err) {
-                                if (err) {
-                                    console.log("Error");
-                                    console.log(err);
-                                } else {
-                                    fs.unlink(file, function() {
-                                        console.log("file deleted");
-                                    });
-                                    fs.unlink(buildingsFile, function() {
-                                        console.log("file deleted");
-                                    });
-                                    fs.unlink(settlementsFile, function() {
-                                        console.log("file deleted");
-                                    });
-                                    fs.unlink(buildingsShapeFile, function() {
-                                        console.log("file deleted");
-                                    });
-                                    fs.unlink(settlementsShapeFile, function() {
-                                        console.log("file deleted");
-                                    });
+                            var output = fs.createWriteStream(file);
+                            var archive = archiver('zip', {
+                                zlib: {
+                                    level: 9
                                 }
                             });
-
-
+                            archive.on('error', function(err) {
+                                throw err;
+                            });
+                            archive.pipe(output);
+                            archive.file(buildingsShapeFile);
+                            archive.file(settlementsShapeFile);
+                            archive.finalize();
+                            output.on('close', function() {
+                                res.download(file, function(err) {
+                                    if (err) {
+                                        console.log("Error");
+                                        console.log(err);
+                                    } else {
+                                        fs.unlink(file, function() {
+                                            console.log("file deleted");
+                                        });
+                                        fs.unlink(buildingsFile, function() {
+                                            console.log("file deleted");
+                                        });
+                                        fs.unlink(settlementsFile, function() {
+                                            console.log("file deleted");
+                                        });
+                                        fs.unlink(buildingsShapeFile, function() {
+                                            console.log("file deleted");
+                                        });
+                                        fs.unlink(settlementsShapeFile, function() {
+                                            console.log("file deleted");
+                                        });
+                                    }
+                                });
+                            });
                         });
 
                     });

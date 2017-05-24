@@ -41,6 +41,34 @@ function addLayerControl(map, baseLayer) {
     map.addControl(new CustomControl());
 }
 
+function addZoomToDefault(map) {
+    var CustomControl = L.Control.extend({
+
+        options: {
+            position: 'topleft'
+        },
+        onAdd: function(map) {
+            var container = L.DomUtil.create('div', 'glyphicon glyphicon-globe leaflet-bar leaflet-control leaflet-control-custom');
+            container.id = "zoomToDefault";
+            container.title = "zoom to default";
+            //var image = L.DomUtil.create('img', 'leaflet-buttons-control-img', container);
+            //image.setAttribute('src','/images/arrow_forward_25.png');
+            container.style.backgroundColor = 'white';
+            container.style.width = '30px';
+            container.style.height = '30px';
+            container.onclick = function() {
+                map.fitBounds(settlements_json.getBounds());
+            }
+            return container
+        }
+
+    });
+
+    map.addControl(new CustomControl());
+
+
+}
+
 function addFeatureSwitcher(map) {
 
     var CustomControl = L.Control.extend({
@@ -49,7 +77,7 @@ function addFeatureSwitcher(map) {
             position: 'topleft'
         },
         onAdd: function(map) {
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            var container = L.DomUtil.create('div', 'glyphicon glyphicon-eye-open leaflet-bar leaflet-control leaflet-control-custom');
             container.id = "featureSwitcher";
             container.title = "turn features on/off";
             //var image = L.DomUtil.create('img', 'leaflet-buttons-control-img', container);
@@ -58,23 +86,38 @@ function addFeatureSwitcher(map) {
             container.style.width = '30px';
             container.style.height = '30px';
             container.onclick = function() {
-                if (layer_visibilty == true) {
+                if (layer_visibilty == 1) {
 
-                    layer_visibilty = false;
+                    layer_visibilty = 2;
                     buildings_json.setStyle({
-                        opacity: 0
+                        opacity: 0,
+                        fillOpacity: 0.2
                     });
                     settlements_json.setStyle({
-                        opacity: 0
+                        opacity: 0,
+                        fillOpacity: 0.2
+
                     });
 
-                } else {
-                    layer_visibilty = true;
+                } else if (layer_visibilty == 2) {
+                    layer_visibilty = 3;
                     buildings_json.setStyle({
-                        opacity: 1
+                        opacity: 0,
+                        fillOpacity: 0
                     });
                     settlements_json.setStyle({
-                        opacity: 1
+                        opacity: 0,
+                        fillOpacity: 0
+                    });
+                } else if (layer_visibilty == 3) {
+                    layer_visibilty = 1;
+                    buildings_json.setStyle({
+                        opacity: 1,
+                        fillOpacity: 0.2
+                    });
+                    settlements_json.setStyle({
+                        opacity: 0.5,
+                        fillOpacity: 0.2
                     });
                 }
 
@@ -113,7 +156,7 @@ function addDownloadControl(map) {
     map.addControl(new DownloadControl());
 }
 
-function addDrawControl(map, settlements_json, circleMarkers) {
+function addDrawControl(map) {
     var drawLayer = new L.FeatureGroup();
     map.addLayer(drawLayer);
 
@@ -156,7 +199,8 @@ function addDrawControl(map, settlements_json, circleMarkers) {
                 },
                 function(returnedData) {
                     if (returnedData.data.status === "no user") {
-                        drawLayer.remove();
+
+                        drawLayer.clearLayers();
                         alert("please log in first");
                         return;
                     }
@@ -166,7 +210,7 @@ function addDrawControl(map, settlements_json, circleMarkers) {
                         },
                         function(returnedData) {});
                     if (returnedData.data.featureCounter == drawLayerArray.length - 1) {
-                        drawLayer.remove();
+                        drawLayer.clearLayers();
                         refresh(map);
                         return;
                     } else {

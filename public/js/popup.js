@@ -182,15 +182,15 @@ function addPopupForSettlements(feature, layer, map, isAdmin) {
 
     });
     var settlement_string = "";
-    if (feature.properties.settlement === 0) {
+    /*if (feature.properties.settlement === 0) {
         settlement_string = "as 'no settlement' ?"
     } else {
         settlement_string = "as 'settlement' ?"
-    }
-    container.html("Is this tile  mapped correctly " + settlement_string + "<br><br><button type='button' id='positiveVote' class='btn btn-success'><span class='glyphicon glyphicon-thumbs-up'></span></button> <button type='button' id='negativeVote' class='btn btn-danger'><span class='glyphicon glyphicon-thumbs-down'></span></button><br><br><div id ='positiveResult'></div><br><div id ='negativeResult'></div><br><div id ='bottomText'></div><div id = 'adminControl'></div>");
+    }*/
+    container.html("Does this tile contain buildings? <br><br><button type='button' id='positiveVote' class='btn btn-success'><span class='glyphicon glyphicon-thumbs-up'></span></button> <button type='button' id='negativeVote' class='btn btn-danger'><span class='glyphicon glyphicon-thumbs-down'></span></button><br><br><div id ='positiveResult'></div><br><div id ='negativeResult'></div><br><div id ='bottomText'></div><div id = 'adminControl'></div>");
 
     if (isAdmin) {
-        $(container).children('#adminControl').html("<button type='button' id='delete' class='btn btn-danger'>Delete</button> <button type='button' id='download' class='btn btn-default' data-toggle='modal' data-target='#downloadModal'>Download</button>");
+        $(container).children('#adminControl').html("<button type='button' id='delete' class='btn btn-danger'>Delete</button>");
     }
     layer.bindPopup(container[0]);
 

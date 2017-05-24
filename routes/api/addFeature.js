@@ -8,35 +8,33 @@ exports = module.exports = function(req, res) {
     var featureCounter = req.body.featureCounter;
 
     if (!req.user) return res.apiResponse({
-        data: {            
+        data: {
             "status": "no user"
         }
     });
-    Scenario.model.findById(scenario_id, function(err, scenario) {        
+    Scenario.model.findById(scenario_id, function(err, scenario) {
         if (err) return res.apiError('database error', err);
-        /*var _json = scenario.geojson_buildings; 
-        _json.features += jsonString;       
-        console.log(_json.features);*/
         var _json = JSON.parse(scenario.geojson_buildings);
-        var lastFeature = _json.features[_json.features.length-1];
-
+        var lastFeature = _json.features[_json.features.length - 1];
+        var _time = new Date().toString();
         var newFeature = new Object();
         newFeature.type = "Feature";
         newFeature.properties = {};
         newFeature.properties.diff_to_up = 0;
         newFeature.properties.positiveVotes = 0;
         newFeature.properties.negativeVotes = 0;
+        newFeature.properties.createdBy = "human";
+        newFeature.properties.time = _time;
         newFeature.geometry = {};
         newFeature.geometry.type = "Point";
         newFeature.geometry.coordinates = [lng, lat];
-        newFeature.id = lastFeature.id+1;
+        newFeature.id = lastFeature.id + 1;
 
-        _json.features.push(newFeature);       
+        _json.features.push(newFeature);
 
-   
+
         scenario.processed = true;
         scenario.geojson_buildings = JSON.stringify(_json, null, 2);
-        scenario.save();
         scenario.save().then(function(scenario) {
             return res.apiResponse({
                 data: {
