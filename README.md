@@ -8,3 +8,5 @@ How to run:
 - run npm start server / node server.js
 
 Python is needed (recommended version 2.7)
+
+This Repository is just for demo purposes and will not be maintained in any form.

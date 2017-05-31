@@ -10,7 +10,7 @@ keystone.init({
     'view engine': 'jade',
 
     'auto update': true,
-    'mongo': 'mongodb://localhost/DMap',
+    'mongo': 'mongodb://localhost/DMap_noPremapped',
 
 
     'signin url': '/signin',

@@ -1,5 +1,5 @@
 {
-  "name": "conflict-mapping-webapp",
+  "name": "conflict-mapping-webapp_noPremapped",
   "version": "1.0.0",
   "description": "Application to combine community-based and automatic image analysis in crisis mapping",
   "main": "Server.js",

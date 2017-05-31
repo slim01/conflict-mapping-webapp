@@ -14,9 +14,13 @@ exports = module.exports = function(req, res) {
     });
     Scenario.model.findById(scenario_id, function(err, scenario) {
         if (err) return res.apiError('database error', err);
+        /*var _json = scenario.geojson_buildings; 
+        _json.features += jsonString;       
+        console.log(_json.features);*/
         var _json = JSON.parse(scenario.geojson_buildings);
         var lastFeature = _json.features[_json.features.length - 1];
         var _time = new Date().toString();
+        //console.log(lastFeature.id+1);
         var newFeature = new Object();
         newFeature.type = "Feature";
         newFeature.properties = {};
@@ -24,7 +28,7 @@ exports = module.exports = function(req, res) {
         newFeature.properties.positiveVotes = 0;
         newFeature.properties.negativeVotes = 0;
         newFeature.properties.createdBy = "human";
-        newFeature.properties.time = _time;
+        newFeature.properties.time =  _time;
         newFeature.geometry = {};
         newFeature.geometry.type = "Point";
         newFeature.geometry.coordinates = [lng, lat];

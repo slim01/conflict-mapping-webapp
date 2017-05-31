@@ -17,8 +17,9 @@ var settlements_json;
 var scenario_id;
 var refreshBounds;
 var layer_visibilty = 1;
-var _map;
 var refresh;
+var showPriorityList = false;
+var _map;
 
 $(document).ready(function() {
 
@@ -34,6 +35,12 @@ $(document).ready(function() {
 
         $.get('/getScenarioById' + scenario_id, function(res) {
             var scenario = res.data;
+            showPriorityList = scenario.showPriorityList;
+            if (!showPriorityList) {
+                $("#mapid").css("width", "100%");
+                $("#priorityAreas").css("visibility", "hidden");
+                $("#priorityAreas").css("z-index", "-1");
+            }
             _addGeoJsons(map, JSON.parse(scenario.geojson_buildings), JSON.parse(scenario.geojson_settlements), mode);
             if (mode === "init") {
                 _createBaseLayer(map, scenario.wms_before, scenario.wms_after, scenario.layer_before, scenario.layer_after);
@@ -69,6 +76,23 @@ $(document).ready(function() {
                     });
             }
         });
+        /*
+         * Event listener to log position on pan
+         */
+        map.on("moveend", function() {
+            var _zoom = map.getZoom().toString();
+            var _center = map.getCenter().toString();
+            var _bounds_southWest = map.getBounds()._southWest.toString();
+            var _bounds_northEast = map.getBounds()._northEast.toString();
+            $.post('/logCurrentPosition', {
+                    scenarioId: scenario_id,
+                    zoom: _zoom,
+                    center: _center,
+                    bounds_southWest: _bounds_southWest,
+                    bounds_northEast: _bounds_northEast
+                },
+                function(returnedData) {});
+        });
 
 
     }
@@ -93,8 +117,6 @@ $(document).ready(function() {
         map.options.crs = L.CRS.EPSG4326;
         map.setView(center);
         map._resetView(map.getCenter(), map.getZoom());
-
-
         addLayerControl(map, baseLayer);
     }
 
@@ -172,10 +194,24 @@ $(document).ready(function() {
             } else {
                 map.removeLayer(buildings_json);
             }
+            /*
+             * log current position on zoom end
+             */
+            var _zoom = map.getZoom().toString();
+            var _center = map.getCenter().toString();
+            var _bounds_southWest = map.getBounds()._southWest.toString();
+            var _bounds_northEast = map.getBounds()._northEast.toString();
+            $.post('/logCurrentPosition', {
+                    scenarioId: scenario_id,
+                    zoom: _zoom,
+                    center: _center,
+                    bounds_southWest: _bounds_southWest,
+                    bounds_northEast: _bounds_northEast
+                },
+                function(returnedData) {});
         });
 
     }
-
 
     function _addGeoJsons(map, buildings, settlements, mode) {
         var isAdmin = false;
@@ -189,36 +225,62 @@ $(document).ready(function() {
                 buildings_json = new L.geoJSON(buildings, {
 
                     onEachFeature: function(feature, layer) {
-
+                        //if (feature.properties) {
+                        /*
+                        layer.bindPopup(Object.keys(feature.properties).map(function(k) {
+                            return k + ": " + feature.properties[k];
+                        }).join("<br />"), {
+                            maxHeight: 200
+                        });*/
                         addPopupForBuildings(feature, layer, map, isAdmin);
-
+                        //}
                     },
                     pointToLayer: function(feature, latlng) {
+                        var marker = L.circleMarker(latlng, {
+                            color: "#ff7800"
+                        });
+                        if (!feature.properties.createdBy) {
+
+                        }
                         return L.circleMarker(latlng, {
-                            color: "#ff7800",
+                            color: "#ff7800"
                         });
                     }
                 });
-
-
-                if (mode === "init") {
+                if (mode ==="init") {
                     settlements_json = new L.geoJSON(settlements, {
                         onEachFeature: function(feature, layer) {
-                            if (feature.properties.settlement === 1) {
-                                layer.setStyle({
-                                    opacity: 0.5
-                                });
-                            } else {
-                                layer.setStyle({
-                                    color: TileColor_noSettlement,
-                                    opacity: 0.5
-                                });
+                                //if (feature.properties) {
+                                /*
+                                layer.bindPopup(Object.keys(feature.properties).map(function(k) {
+                                    return k + ": " + feature.properties[k];
+                                }).join("<br />"), {
+                                    maxHeight: 200
+                                });*/
+                                /*if (feature.properties.settlement === 0) {
+                                    layer.setStyle({
+                                        color: TileColor_noSettlement,
+                                        opacity: 0.2
+                                    });
+                                }*/
+                                if (feature.properties.settlement === 1 && showPriorityList) {
+                                    layer.setStyle({
+                                        opacity: 0.5
+                                    });
+                                } else {
+                                    layer.setStyle({
+                                        color: TileColor_noSettlement,
+                                        opacity: 0.5
+                                    });
+                                }
+                                addToPriorityList(feature, layer, map);
+                                addPopupForSettlements(feature, layer, map, isAdmin);
+                                //}
                             }
-                            addToPriorityList(feature, layer, map);
-                            addPopupForSettlements(feature, layer, map, isAdmin);
-
-                        }
-
+                            /*,
+                                                pointToLayer: function(feature, latlng) {
+                                                    return L.circleMarker(latlng);
+                                                }*/
                     });
                     sortPriorityList();
                     map.addLayer(settlements_json);
@@ -229,9 +291,15 @@ $(document).ready(function() {
                     maxClusterRadius: 40,
                     disableClusteringAtZoom: 17
                 });
-                circleMarkers.addLayer(buildings_json);*/
+                circleMarkers.addLayer(buildings_json);
+                map.addLayer(circleMarkers)*/
                 map.addLayer(buildings_json);
-
+                buildings_json.eachLayer(function(featureInstancelayer) {
+                    if (featureInstancelayer.feature.properties.createdBy !== "human") {
+                        buildings_json.removeLayer(featureInstancelayer);
+                    }
+                });
+                //map.setMaxBounds(settlements_json.getBounds());
                 if (mode === "init") {
                     try {
                         map.fitBounds(settlements_json.getBounds());
@@ -239,6 +307,14 @@ $(document).ready(function() {
                     } catch (err) {
                         console.log("can't get bounds");
                     }
+                    /*
+                    $.post('/deleteAll', {
+                            scenarioId: scenario_id,
+                            geojson_type: "geojson_buildings"
+                        },
+                        function(returnedData) {
+                            console.log(returnedData);
+                        });*/
                     addDrawControl(map);
                 } else {
 

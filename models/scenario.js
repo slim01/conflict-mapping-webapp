@@ -80,7 +80,13 @@ Scenario.add({
         required: false,
         index: true,
         initial: true
-    },    
+    },
+    showPriorityList: {
+        type: Types.Boolean,
+        required: false,
+        index: true,
+        initial: true
+    },
     useGeojsonInsteadOfShp: {
         type: Types.Boolean,
         required: false,

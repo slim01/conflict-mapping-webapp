@@ -38,9 +38,9 @@ exports = module.exports = function(req, res) {
             _jsonSettlements = JSON.parse(settlements_json);
             _jsonSettlements.features.filter(function(i) {
                 if (i.status === "DELETED") {} else {
-                    if (i.properties.positiveVotes < i.properties.negativeVotes) {
+                    if (i.properties.positiveVotes <= i.properties.negativeVotes) {
                         i.properties.settlement = 0;
-                    } else if (i.properties.positiveVotes > i.properties.negativeVotes){
+                    } else {
                         i.properties.settlement = 1;
                     }
                 }
