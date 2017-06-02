@@ -6,7 +6,7 @@ body {
   background-color: rgba(252,255,245,1);	  
 }
 #mapid { 
-	height: calc(100% - 51px);
+	height: calc(100% - 50px);
 	width: 80%;
 	position:absolute;
 	z-index: 0;
